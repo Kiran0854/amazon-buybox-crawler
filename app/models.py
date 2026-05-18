@@ -11,9 +11,10 @@ class ScrapeRequest(BaseModel):
     """Request body for scraping one or more Amazon ASINs."""
 
     asins: list[str] = Field(..., min_length=1, max_length=50)
-    marketplace: str = Field(default="https://www.amazon.com")
+    marketplace: str = Field(default="https://www.amazon.fr")
     timeout_ms: int = Field(default=45_000, ge=5_000, le=120_000)
     headless: bool = True
+    max_concurrency: int = Field(default=3, ge=1, le=10)
 
     @field_validator("asins")
     @classmethod
@@ -50,6 +51,8 @@ class ProductResult(BaseModel):
     current_price: str | None = None
     buybox_seller: str | None = None
     seller_count: int | None = None
+    bullet_points: list[str] = Field(default_factory=list)
+    product_details: dict[str, str] = Field(default_factory=dict)
     offers: list[SellerOffer] = Field(default_factory=list)
     product_url: str
     offers_url: str
